@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface Moderne</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            display: flex;
+            background-color: #f7f9fc;
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(145deg, #1d3557, #457b9d);
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100%;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .sidebar h2 {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin: 20px 0;
+        }
+
+        .sidebar ul li a {
+            color: #f1faee;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+        }
+
+        .sidebar .logout {
+            margin-top: auto;
+        }
+
+        /* Content Styles */
+        .content {
+            margin-left: 260px;
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .content header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .content header h1 {
+            font-size: 28px;
+        }
+
+        .content header .add-btn {
+            padding: 10px 20px;
+            background-color: #1d3557;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .content header .add-btn:hover {
+            background-color: #457b9d;
+        }
+
+        /* Grid Styles */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        /* .folders {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        } */
+
+        /* .folder:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        } */
+
+        .folder .icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #457b9d;
+        }
+
+        .folder p {
+            font-size: 16px;
+            color: #555;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .content {
+                margin-left: 220px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                width: 180px;
+            }
+
+            .content {
+                margin-left: 200px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>Navigation</h2>
+        <ul>
+            <li><a href="#"><i class="bi bi-house"></i> Accueil</a></li>
+            <li><a href="#"><i class="bi bi-folder"></i> Documents</a></li>
+            <li><a href="#"><i class="bi bi-gear"></i> Paramètres</a></li>
+            <li><a href="#"><i class="bi bi-question-circle"></i> Aide</a></li>
+        </ul>
+        <ul class="logout">
+            <li><a href="#"><i class="bi bi-box-arrow-right"></i> Déconnexion</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <header>
+            <h1>Documents</h1>
+            <button class="add-btn">Ajouter un document</button>
+        </header>
+        <div class="grid">
+            <div class="folder">
+                <div class="icons"><img src="static/image/open-folder.png" width="120" alt=""></div>
+                <p>Dossier 1</p>
+            </div>
+            <div class="folder">
+                <div class="icons"><img src="static/image/open-folder.png" width="120" alt=""></div>
+                <p>Dossier 2</p>
+            </div>
+            <div class="folder">
+                <div class="icons"><img src="static/image/open-folder.png" width="120" alt=""></div>
+                <p>Dossier 3</p>
+            </div>
+            <div class="folder">
+                <div class="icons"><img src="static/image/open-folder.png" width="120" alt=""></div>
+                <p>Dossier 4</p>
+            </div>
+            <div class="folder">
+                <div class="icons"><img src="static/image/open-folder.png" width="120" alt=""></div>
+                <p>Dossier 5</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
