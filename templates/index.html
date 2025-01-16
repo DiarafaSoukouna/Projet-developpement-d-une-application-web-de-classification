@@ -28,7 +28,7 @@
         /* Sidebar Styles */
         .sidebar {
             width: 250px;
-            background: linear-gradient(145deg, #1d3557, #457b9d);
+            background: linear-gradient(145deg, #322058, #6441AD);
             color: white;
             padding: 20px;
             position: fixed;
@@ -76,13 +76,11 @@
 
         /* Content Styles */
         .content {
-            margin-left: 260px;
-            padding: 20px;
             flex-grow: 1;
         }
 
         .content header {
-            display: flex;
+            
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
@@ -91,6 +89,70 @@
         .content header h1 {
             font-size: 28px;
         }
+        .header1 {
+            
+                background: linear-gradient(135deg, #322058, #6441AD 100%);
+                color: white;
+                padding: 5px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin:0;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+               
+            }
+    
+            .logo {
+                display: flex;
+                align-items: center;
+            }
+    
+            .logo img {
+                width: 70px;
+                height: 70px;
+                margin-right: 5px;
+            }
+    
+            .logo-text {
+                font-size: 2rem;
+                font-weight: bold;
+
+            }
+    
+            .profile {
+                display: flex;
+                align-items: center;
+            }
+    
+            .profile-name {
+                margin-right: 15px;
+                font-size: 1rem;
+            }
+    
+            .profile-pic {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid white;
+            }
+    
+            /* Responsive design */
+            @media (max-width: 600px) {
+                .header {
+                    flex-direction: column;
+                    text-align: center;
+                    padding: 1rem;
+                }
+    
+                .logo {
+                    margin-bottom: 1rem;
+                }
+    
+                .profile-name {
+                    display: none;
+                }
+            }
 
         .content header .add-btn {
             padding: 10px 20px;
@@ -114,16 +176,9 @@
             gap: 20px;
         }
 
-        /* .folders {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 10px;
+        .folder {
             text-align: center;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-        } */
+        }
 
         /* .folder:hover {
             transform: translateY(-5px);
@@ -165,10 +220,21 @@
 </head>
 
 <body>
+    <div class="content">
+        <div class="header1">
+            <div class="logo">
+                <img src="../static/image/DanayaFile (1).png" alt="Logo de l'application">
+                <span class="logo-text">DanayaFile</span>
+            </div>
+            <div class="profile">
+                <span class="profile-name">John Doe</span>
+                <img src="path/to/profile-pic.jpg" alt="Photo de profil" class="profile-pic">
+            </div>
+        </div>
     <div class="sidebar">
-        <h2>Navigation</h2>
-        <ul>
-            <li><a href="#"><i class="bi bi-house"></i> Accueil</a></li>
+       
+        <ul >
+            <li style="background-color: #322058; border-radius: 10%;"><a href="#"><i class="bi bi-house"></i> Accueil</a></li>
             <li><a href="#"><i class="bi bi-folder"></i> Documents</a></li>
             <li><a href="#"><i class="bi bi-gear"></i> Paramètres</a></li>
             <li><a href="#"><i class="bi bi-question-circle"></i> Aide</a></li>
@@ -178,30 +244,30 @@
         </ul>
     </div>
 
-    <div class="content">
-        <header>
+   
+       <div>
             <h1>Documents</h1>
             <button class="add-btn">Ajouter un document</button>
-        </header>
+        </div>
         <div class="grid">
             <div class="folder">
-                <div class="icons"><img src="static/image/open-folder.png" width="120" alt=""></div>
+                <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
                 <p>Dossier 1</p>
             </div>
             <div class="folder">
-                <div class="icons"><img src="static/image/open-folder.png" width="120" alt=""></div>
+                <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
                 <p>Dossier 2</p>
             </div>
             <div class="folder">
-                <div class="icons"><img src="static/image/open-folder.png" width="120" alt=""></div>
+                <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
                 <p>Dossier 3</p>
             </div>
             <div class="folder">
-                <div class="icons"><img src="static/image/open-folder.png" width="120" alt=""></div>
+                <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
                 <p>Dossier 4</p>
             </div>
             <div class="folder">
-                <div class="icons"><img src="static/image/open-folder.png" width="120" alt=""></div>
+                <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
                 <p>Dossier 5</p>
             </div>
         </div>
