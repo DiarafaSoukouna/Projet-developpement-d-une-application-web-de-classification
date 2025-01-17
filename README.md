@@ -1,3 +1,11 @@
+### Exécuter l'API
+
+- Commande pour lancer l'api :
+    - Windows : ```python .\backend\api.py```
+
+    - Test API sur POSTMAN :
+    ![Test API sur POSTMAN](/static/image/Screenshot%202025-01-17%20234751.png)
+
 ### Config
 
 - Voir le dossier backend, j'ai mis le notebook et le model (zipper, il faut décompresser en dossier models),
