@@ -14,7 +14,10 @@ body {
 a {
     text-decoration: none;
 }
-
+.btn-folder, .bg-folder{
+    background: linear-gradient(145deg, #322058, #6441AD);
+    color: white;
+}
 /* Sidebar Styles */
 .sidebar {
     width: 250px;

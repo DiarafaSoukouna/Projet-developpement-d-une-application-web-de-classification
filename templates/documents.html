@@ -3,26 +3,106 @@
 {% block title %}Accueil{% endblock %}
 
 {% block content %}
-<div class="grid">
-    <div class="folder">
-        <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
-        <p>Dossier 1</p>
+<div style="padding: 20px;">
+    <div style="display: flex;justify-content: space-between;">
+        <h2>Documents telecharger</h2>
+        <button class="btn btn-folder" data-toggle="modal" data-target="#docs">Ajouter un document</button>
     </div>
-    <div class="folder">
-        <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
-        <p>Dossier 2</p>
-    </div>
-    <div class="folder">
-        <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
-        <p>Dossier 3</p>
-    </div>
-    <div class="folder">
-        <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
-        <p>Dossier 4</p>
-    </div>
-    <div class="folder">
-        <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
-        <p>Dossier 5</p>
+    <div
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
+        <!-- Card 1 -->
+        <div class="folder">
+            <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
+            <p>Dossier 1</p>
+        </div>
+        <div class="folder">
+            <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
+            <p>Dossier 2</p>
+        </div>
+        <div class="folder">
+            <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
+            <p>Dossier 3</p>
+        </div>
+        <div class="folder">
+            <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
+            <p>Dossier 4</p>
+        </div>
+        <div class="folder">
+            <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
+            <p>Dossier 5</p>
+        </div>
     </div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="docs" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-folder text-white">
+                <h5 class="modal-title" id="exampleModalLongTitle">Télécharger un fichier</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="fileUploadForm" action="/upload" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="fileInput" class="form-label font-weight-bold">Sélectionnez un fichier (.txt, .docs,
+                            .doc)</label>
+                        <div class="custom-file">
+                            <input type="file" id="fileInput" name="file" class="custom-file-input"
+                                accept=".txt,.docs,.doc" required>
+                            <label class="custom-file-label" for="fileInput">Choisissez un fichier</label>
+                        </div>
+                        <small class="form-text text-muted mt-2">
+                            Assurez-vous que le fichier est au bon format avant de soumettre.
+                        </small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-danger" data-dismiss="modal">
+                    <i class="fas fa-rotate-left"></i> Annuler
+                </button>
+                <button type="submit" form="fileUploadForm" class="btn btn-folder">
+                    <i class="fas fa-check"></i> Soumettre
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('fileUploadForm').addEventListener('submit', function (event) {
+    event.preventDefault(); // Empêche le rechargement de la page
+
+    const formData = new FormData(this);
+
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Erreur : ${data.error}`);
+        } else {
+            alert(`Succès : ${data.message}\nNom du fichier : ${data.filename}`);
+            // Fermer le modal
+            $('#docs').modal('hide');
+            // Réinitialiser le formulaire
+            document.getElementById('fileUploadForm').reset();
+            // Réinitialiser le label du fichier
+            document.querySelector('.custom-file-label').textContent = 'Choisissez un fichier';
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        alert('Une erreur s\'est produite lors du téléchargement.');
+    });
+});
+
+
+</script>
+
 {% endblock %}

@@ -1,288 +1,54 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interface Moderne</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        /* Global Styles */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Roboto', Arial, sans-serif;
-            display: flex;
-            background-color: #f7f9fc;
-            color: #333;
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: 250px;
-            background: linear-gradient(145deg, #322058, #6441AD);
-            color: white;
-            padding: 20px;
-            position: fixed;
-            height: 100%;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .sidebar h2 {
-            font-size: 24px;
-            margin-bottom: 30px;
-        }
-
-        .sidebar ul {
-            list-style: none;
-        }
-
-        .sidebar ul li {
-            margin: 20px 0;
-        }
-
-        .sidebar ul li a {
-            color: #f1faee;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            border-radius: 6px;
-            transition: background 0.3s;
-        }
-
-        .sidebar ul li a:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .sidebar ul li a i {
-            margin-right: 10px;
-        }
-
-        .sidebar .logout {
-            margin-top: auto;
-        }
-
-        /* Content Styles */
-        .content {
-            flex-grow: 1;
-        }
-
-        .content header {
-
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .content header h1 {
-            font-size: 28px;
-        }
-
-        .header1 {
-
-            /* background: linsear-gradient(135deg, #322058, #6441AD 100%); */
-            border-bottom: solid 2px #322058;
-            color: white;
-            padding: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo img {
-            width: 70px;
-            height: 70px;
-            margin-right: 5px;
-        }
-
-        .logo-text {
-            color: #322058;
-            font-size: 2rem;
-            font-weight: bold;
-
-        }
-
-        .profile {
-            display: flex;
-            align-items: center;
-        }
-
-        .profile-name {
-            color: #322058;
-            margin-right: 15px;
-            font-size: 1rem;
-        }
-
-        .profile-pic {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid white;
-        }
-
-        /* Responsive design */
-        @media (max-width: 600px) {
-            .header {
-                flex-direction: column;
-                text-align: center;
-                padding: 1rem;
-            }
-
-            .logo {
-                margin-bottom: 1rem;
-            }
-
-            .profile-name {
-                display: none;
-            }
-        }
-
-        .content header .add-btn {
-            padding: 10px 20px;
-            background-color: #1d3557;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
-        }
-
-        .content header .add-btn:hover {
-            background-color: #457b9d;
-        }
-
-        /* Grid Styles */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .folder {
-            text-align: center;
-        }
-
-        /* .folder:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-        } */
-
-        .folder .icon {
-            font-size: 50px;
-            margin-bottom: 15px;
-            color: #457b9d;
-        }
-
-        .folder p {
-            font-size: 16px;
-            color: #555;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 200px;
-            }
-
-            .content {
-                margin-left: 220px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .sidebar {
-                width: 180px;
-            }
-
-            .content {
-                margin-left: 200px;
-            }
-        }
-        li {
-            border-radius: 10%;
-        }
-        li .active {
-            background-color: #322058;
-        }
-    </style>
+    <title>Customer Management</title>
 </head>
-<!-- style="" -->
 
 <body>
-    <div class="content">
-        <div class="header1">
-            <div class="logo">
-                <img src="../static/image/DanayaFile (1).png" alt="Logo de l'application">
-                <span class="logo-text">DanayaFile</span>
-            </div>
-            <div class="profile">
-                <span class="profile-name">John Doe</span>
-                <img src="../static/image/profil.jpg" alt="Photo de profil" class="profile-pic">
-            </div>
-        </div>
-        <div class="sidebar">
 
-            <ul>
-                <li class="active"><a href="#"><i class="fas fa-home"></i> Accueil</a></li>
-                <li><a href="#"><i class="fas fa-folder"></i> Documents</a></li>
-                <li><a href="#"><i class="fas fa-cog"></i> Paramètres</a></li>
-                <li><a href="#"><i class="fas fa-question-circle"></i> Aide</a></li>
-            </ul>
-            <ul class="logout">
-                <li><a href="#"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
-            </ul>
-        </div>
+    <h1>Liste des clients</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom </th>
+                <th>Prénom </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+            <tr>
+                <td>{{ customer.id }}</td>
+                <td>{{ customer.nom }}</td>
+                <td>{{ customer.prenom }}</td>
 
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-        <div>
-            <h1>Documents</h1>
-            <button class="add-btn">Ajouter un document</button>
-        </div>
-        <div class="grid">
-            <div class="folder">
-                <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
-                <p>Dossier 1</p>
-            </div>
-            <div class="folder">
-                <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
-                <p>Dossier 2</p>
-            </div>
-            <div class="folder">
-                <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
-                <p>Dossier 3</p>
-            </div>
-            <div class="folder">
-                <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
-                <p>Dossier 4</p>
-            </div>
-            <div class="folder">
-                <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
-                <p>Dossier 5</p>
-            </div>
-        </div>
+    <form method="get">
+        <label for="per_page">Rows per page:</label>
+        <select id="per_page" name="per_page" onchange="this.form.submit()">
+            <option value="10" {% if per_page==10 %}selected{% endif %}>10</option>
+            <option value="20" {% if per_page==20 %}selected{% endif %}>20</option>
+            <option value="50" {% if per_page==50 %}selected{% endif %}>50</option>
+            <option value="100" {% if per_page==100 %}selected{% endif %}>100</option>
+        </select>
+    </form>
+
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('list_customers', page=page-1, per_page=per_page) }}">Previous</a>
+        {% endif %}
+        <span>Page {{ page }} of {{ total_pages }}</span>
+        {% if page < total_pages %} <a href="{{ url_for('list_customers', page=page+1, per_page=per_page) }}">Next</a>
+            {% endif %}
     </div>
+
 </body>
 
 </html>
