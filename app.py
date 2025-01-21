@@ -47,9 +47,6 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/')
-def home():
-    return 'Hello, World!'
 
 @app.route('/upload', methods=['POST', 'GET'])
 def file_upload():
@@ -68,6 +65,7 @@ def file_upload():
 
         file.save(save_path)
         return jsonify({'message': 'Fichier téléchargé avec succès', 'filename': filename}), 200
+    
 
     return jsonify({'error': 'Extension de fichier non autorisée'}), 400
     
