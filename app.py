@@ -47,12 +47,6 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-<<<<<<< HEAD
-# @app.route('/')
-# def home():
-#     return 'Hello, World!'
-=======
->>>>>>> 61bf51bccbd11080ea86eca7fd0439b4f6bdd424
 
 @app.route('/upload', methods=['POST', 'GET'])
 def file_upload():
