@@ -9,7 +9,7 @@ from nltk.stem import WordNetLemmatizer
 nltk.download('wordnet')
 import pickle
 
-base_dir = 'C:/Users/user/Downloads/Cours UIE/M2/Dev Web - Data Science/Projet-developpement-d-une-application-web-de-classification/backend'
+base_dir = 'backend'
 
 with open(f'{base_dir}/models/count_vectorizer.pkl', 'rb') as file:
     countVectorizer = pickle.load(file)

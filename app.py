@@ -29,8 +29,8 @@ def get_db():
 )
 
 @app.route("/")
-# def home():
-#     return render_template("home.html")
+def home():
+    return render_template("home.html")
 
 @app.route("/documents")
 def documents():
@@ -47,9 +47,9 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/')
-def home():
-    return 'Hello, World!'
+# @app.route('/')
+# def home():
+#     return 'Hello, World!'
 
 @app.route('/upload', methods=['POST', 'GET'])
 def file_upload():
