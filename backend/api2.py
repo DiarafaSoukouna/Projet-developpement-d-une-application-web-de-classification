@@ -5,22 +5,22 @@ import re
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from sklearn.feature_extraction.text import CountVectorizer
 import pickle
 
 nltk.download('stopwords')
 nltk.download('wordnet')
 
 class DocumentProcessor:
-    def __init__(self, model_path):
+    def __init__(self, model_path, vectorizer_path):
         """
         Initialise le processeur de documents.
         model_path : Chemin vers le fichier pickle du modèle entraîné.
+        vectorizer_path : Chemin vers le fichier pickle du vectorizer.
         """
         with open(model_path, 'rb') as model_file:
-            self.model = pickle.load(model_file)  # Charger le modèle classifieur
-
-        self.vectorizer = CountVectorizer()  # Initialisation du vectorizer ici
+            self.model = pickle.load(model_file)
+        with open(vectorizer_path, 'rb') as vectorizer_file:
+            self.vectorizer = pickle.load(vectorizer_file)
         self.french_stopwords = stopwords.words('french')
         self.english_stopwords = stopwords.words('english')
         self.lemmatizer = WordNetLemmatizer()
@@ -72,7 +72,7 @@ class DocumentProcessor:
         df['cleaned_content'] = df['cleaned_content'].apply(self.apply_lemmatization)
 
         # Transformation en vecteur
-        cleaned_content_vectorized = self.vectorizer.fit_transform(df['cleaned_content'])
+        cleaned_content_vectorized = self.vectorizer.transform(df['cleaned_content'])
 
         return cleaned_content_vectorized.toarray()
 
