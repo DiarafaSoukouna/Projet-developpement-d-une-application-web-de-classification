@@ -1,8 +1,10 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, send_file
 import os
 import time
 from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
+import docx
+
 # from '/backend/api2.py' import DocumentProcessor
 from backend.api2 import DocumentProcessor
 import pymysql
@@ -15,7 +17,8 @@ app.config['UPLOAD_FOLDER'] = os.path.join(BASE_DIR, 'documents')  # Chemin abso
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'  # Utilisateur MySQL
 app.config['MYSQL_PASSWORD'] = ''  # Mot de passe MySQL
-app.config['MYSQL_DB'] = 'danaya_file'  # Base de données MySQL
+app.config['MYSQL_DB'] = 'danaya_file' 
+app.config['MYSQL_PORT'] = 3300
 # mysql = MySQL(app)
 
 # Initialisation de l'extension MySQL
@@ -29,6 +32,7 @@ def get_db():
         user=app.config['MYSQL_USER'],
         password=app.config['MYSQL_PASSWORD'],
         db=app.config['MYSQL_DB'],
+        port=app.config['MYSQL_PORT'],
         cursorclass=pymysql.cursors.DictCursor
 )
 
@@ -38,8 +42,8 @@ def home():
 
 @app.route("/documents", methods=['GET'])
 def documents():
-    # Récupération d'une connexion à la base de données && Création d'un curseur pour exécuter des requêtes SQL
-    conn = pymysql.connect(host=app.config['MYSQL_HOST'], user=app.config['MYSQL_USER'], password=app.config['MYSQL_PASSWORD'], db=app.config['MYSQL_DB'])
+    
+    conn = pymysql.connect(host=app.config['MYSQL_HOST'], user=app.config['MYSQL_USER'], password=app.config['MYSQL_PASSWORD'], db=app.config['MYSQL_DB'], port=app.config['MYSQL_PORT'])
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM `categories`")
     categories = cursor.fetchall()
@@ -50,7 +54,7 @@ def settings():
     return render_template("settings.html")
 @app.route("/category/<category_id>", methods=['GET'])
 def category(category_id):
-    conn = pymysql.connect(host=app.config['MYSQL_HOST'], user=app.config['MYSQL_USER'], password=app.config['MYSQL_PASSWORD'], db=app.config['MYSQL_DB'])
+    conn = pymysql.connect(host=app.config['MYSQL_HOST'], user=app.config['MYSQL_USER'], password=app.config['MYSQL_PASSWORD'], db=app.config['MYSQL_DB'], port=app.config['MYSQL_PORT'])
     cursor = conn.cursor()
     cursor.execute(f"SELECT * FROM `files` WHERE `category_id` =  {category_id}")
     files = cursor.fetchall()
@@ -66,7 +70,7 @@ def allowed_file(filename,):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 def insert_file(filename, category):
-    conn = pymysql.connect(host=app.config['MYSQL_HOST'], user=app.config['MYSQL_USER'], password=app.config['MYSQL_PASSWORD'], db=app.config['MYSQL_DB'])
+    conn = pymysql.connect(host=app.config['MYSQL_HOST'], user=app.config['MYSQL_USER'], password=app.config['MYSQL_PASSWORD'], db=app.config['MYSQL_DB'], port=app.config['MYSQL_PORT'])
     cursor = conn.cursor()
     cursor.execute("INSERT INTO files (title, file_path, category_id, uploaded_by ) VALUES (%s, %s, %s, %s)", (filename, 'documents/'+filename, category, 1))
     conn.commit()
@@ -119,27 +123,98 @@ def file_upload():
       
 
     return jsonify({'error': 'Extension de fichier non autorisée'}), 400
-    
-    
-    
-# @app.route('/', methods=['GET'])
-# def list_customers():
-#     per_page = int(request.args.get('per_page', 10))
-#     page = int(request.args.get('page', 1))
-#     offset = (page - 1) * per_page
-    
-#     # Récupération d'une connexion à la base de données && Création d'un curseur pour exécuter des requêtes SQL
-#     cur = get_db().cursor()
-#     cur.execute(f"SELECT * FROM client LIMIT {offset}, {per_page}")
-#     customers = cur.fetchall()
 
-#     # Compter le nombre total de lignes
-#     cur.execute("SELECT COUNT(*) FROM client")
-#     total_customers = 1000 #cur.fetchone()[0]
+def get_fichier_from_db(file_id):
+
+        conn = pymysql.connect(
+            host=app.config['MYSQL_HOST'],
+            user=app.config['MYSQL_USER'],
+            password=app.config['MYSQL_PASSWORD'],
+            db=app.config['MYSQL_DB'],
+            port=app.config['MYSQL_PORT']
+        )
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        cursor.execute("SELECT * FROM `files` WHERE `id` = %s", (file_id,))
+        fichier = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return fichier
+
+
+@app.route('/fichier/<int:id>', methods=['GET'])
+def afficher_fichier(id):
+    fichier = get_fichier_from_db(id)
+    if not fichier:
+        return jsonify({'error': 'Fichier introuvable'}), 404
+
+    chemin_complet = os.path.join(app.config['UPLOAD_FOLDER'], fichier['title'])
+
+    try:
+            with open(chemin_complet, 'r', encoding='utf-8') as f:
+                contenu = f.read()
+        
+    except Exception as e:
+        return jsonify({'error': f'Erreur lors de la lecture du fichier : {e}'}), 500
     
-#     total_pages = (total_customers // per_page) + (total_customers % per_page > 0)
-    
-#     return render_template('index.html', customers=customers, page=page, per_page=per_page, total_pages=total_pages)
+    nom=fichier['title']
+    contenu=contenu
+    id=fichier['id']
+    category=fichier['category_id']
+
+    return render_template("modal.html",nom=nom,contenu=contenu, id=id, category=category)
+
+
+@app.route('/fichier/delete/<int:id>', methods=['DELETE'])
+def supprimer(id):
+    fichier = get_fichier_from_db(id)
+    if not fichier:
+        return jsonify({'error': 'Fichier introuvable'}), 404
+
+    chemin_complet = os.path.join(app.config['UPLOAD_FOLDER'], fichier['title'])
+
+    try:
+        os.remove(chemin_complet)
+    except FileNotFoundError:
+        return jsonify({'error': 'Le fichier sur le disque est introuvable'}), 404
+    except Exception as e:
+        return jsonify({'error': f'Erreur lors de la suppression du fichier : {e}'}), 500
+
+    try:
+        conn = pymysql.connect(
+            host=app.config['MYSQL_HOST'],
+            user=app.config['MYSQL_USER'],
+            password=app.config['MYSQL_PASSWORD'],
+            db=app.config['MYSQL_DB'],
+            port=app.config['MYSQL_PORT']
+        )
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM `files` WHERE `id` = %s", (id,))
+        conn.commit()
+    except Exception as e:
+        return jsonify({'error': f'Erreur lors de la suppression dans la base de données : {e}'}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+    return jsonify({'message': 'Fichier supprimé avec succès'}), 200
+
+
+@app.route('/fichier/export/<int:id>', methods=['GET'])
+def exporter_fichier(id):
+    fichier = get_fichier_from_db(id)
+    if not fichier:
+        return jsonify({'error': 'Fichier introuvable'}), 404
+
+    chemin_complet = os.path.join(app.config['UPLOAD_FOLDER'], fichier['file_path'])
+    if not os.path.exists(chemin_complet):
+        return jsonify({'error': 'Le fichier sur le disque est introuvable'}), 404
+
+    try:
+        return send_file(chemin_complet, as_attachment=True)
+    except Exception as e:
+        return jsonify({'error': f'Erreur lors de l\'exportation du fichier : {e}'}), 500
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

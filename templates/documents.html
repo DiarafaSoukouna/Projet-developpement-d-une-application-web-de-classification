@@ -4,9 +4,13 @@
 
 {% block content %}
 <div style="padding: 20px;">
-    <div style="display: flex;justify-content: space-between;">
-        <h2>Documents telecharger</h2>
+
+    <div style="float: right">
         <button class="btn btn-folder" data-toggle="modal" data-target="#docs">Ajouter un document</button>
+    </div>
+    <div style="text-align: center; ">
+        <h2 style="font-family: match;margin-bottom: 5%; ">Documents importés</h2>
+
     </div>
     <div
         style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
@@ -15,7 +19,7 @@
         <div class="folder">
             <a href="/category/{{ category[0] }}">
                 <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
-                <p>{{ category[2] }}</p>
+                <p style="font-size: 20px;">{{ category[2] }}</p>
             </a>
         </div>
         {% endfor %}
