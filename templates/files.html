@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Fichiers{% endblock %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <div style="text-align: center; ">
+        <h2 style="font-family: match;margin-bottom: 5%; ">Fichiers de la categorie {{category_name}}</h2>
+
+    </div>
+    
+    
+    <div
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
+        <!-- Card 1 -->
+        {% for file in files %}
+        <div class="folder" onclick="window.location.href='/fichier/{{ file[0] }}'">
+          
+            <div class="icons" ><img src="../static/image/word.png" width="120" alt=""></div>
+            <p style="font-size:16px; font-weight: 600; margin-left: 3%; margin-top: 5px;">{{ file[1] }}</p>
+       
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+
+
+{% endblock %}

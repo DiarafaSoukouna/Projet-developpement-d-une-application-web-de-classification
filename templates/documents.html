@@ -4,18 +4,26 @@
 
 {% block content %}
 <div style="padding: 20px;">
-    <div style="display: flex;justify-content: space-between;">
-        <h2>Documents telecharger</h2>
+
+    <div style="float: right">
         <button class="btn btn-folder" data-toggle="modal" data-target="#docs">Ajouter un document</button>
+    </div>
+    <div style="text-align: center; ">
+        <h2 style="font-family: match;margin-bottom: 5%; ">Documents importés</h2>
+
     </div>
     <div
         style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
         <!-- Card 1 -->
+        {% for category in categories %}
         <div class="folder">
-            <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
-            <p>Dossier 1</p>
+            <a href="/category/{{ category[0] }}">
+                <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
+                <p style="font-size: 20px;">{{ category[2] }}</p>
+            </a>
         </div>
-        <div class="folder">
+        {% endfor %}
+        <!-- <div class="folder">
             <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
             <p>Dossier 2</p>
         </div>
@@ -30,7 +38,7 @@
         <div class="folder">
             <div class="icons"><img src="static/image/folder.png" width="120" alt=""></div>
             <p>Dossier 5</p>
-        </div>
+        </div> -->
     </div>
 </div>
 <!-- Modal -->
@@ -49,11 +57,8 @@
                     <div class="form-group">
                         <label for="fileInput" class="form-label font-weight-bold">Sélectionnez un fichier (.txt, .docs,
                             .doc)</label>
-                        <div class="custom-file">
-                            <input type="file" id="fileInput" name="file" class="custom-file-input"
-                                accept=".txt,.docs,.doc" required>
-                            <label class="custom-file-label" for="fileInput">Choisissez un fichier</label>
-                        </div>
+                            <input type="file" id="fileInput" name="file" class="form-control"
+                            accept=".txt,.docs,.doc" required>
                         <small class="form-text text-muted mt-2">
                             Assurez-vous que le fichier est au bon format avant de soumettre.
                         </small>
@@ -61,7 +66,7 @@
                 </form>
             </div>
             <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-outline-danger" data-dismiss="modal">
+                <button  type="button" class="btn btn-outline-danger" data-dismiss="modal">
                     <i class="fas fa-rotate-left"></i> Annuler
                 </button>
                 <button type="submit" form="fileUploadForm" class="btn btn-folder">
@@ -74,33 +79,33 @@
 </div>
 <script>
     document.getElementById('fileUploadForm').addEventListener('submit', function (event) {
-    event.preventDefault(); // Empêche le rechargement de la page
+        event.preventDefault(); // Empêche le rechargement de la page
 
-    const formData = new FormData(this);
-
-    fetch('/upload', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            alert(`Erreur : ${data.error}`);
-        } else {
-            alert(`Succès : ${data.message}\nNom du fichier : ${data.filename}`);
-            // Fermer le modal
-            $('#docs').modal('hide');
-            // Réinitialiser le formulaire
-            document.getElementById('fileUploadForm').reset();
-            // Réinitialiser le label du fichier
-            document.querySelector('.custom-file-label').textContent = 'Choisissez un fichier';
-        }
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-        alert('Une erreur s\'est produite lors du téléchargement.');
+        const formData = new FormData(this);
+        document.getElementById('fileUploadForm').innerHTML = '<label style="font-size: 20px;text-align: center;font-weight: bold;color:#6441AD" for="">Fichier en cours de traitement ...</label>';
+        
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(`Erreur : ${data.error}`);
+                } else {
+                    alert(`${data.message}`);
+                    location.href = '/category/'+ data.category;
+                    // Fermer le modal
+                    $('#docs').modal('hide');
+                    // Réinitialiser le formulaire
+                    document.getElementById('fileUploadForm').reset();
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Une erreur s\'est produite lors du téléchargement.');
+            });
     });
-});
 
 
 </script>
