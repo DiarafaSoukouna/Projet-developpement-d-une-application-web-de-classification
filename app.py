@@ -3,7 +3,6 @@ import os
 import time
 from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
-import docx
 
 # from '/backend/api2.py' import DocumentProcessor
 from backend.api2 import DocumentProcessor
@@ -18,7 +17,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'  # Utilisateur MySQL
 app.config['MYSQL_PASSWORD'] = ''  # Mot de passe MySQL
 app.config['MYSQL_DB'] = 'danaya_file' 
-app.config['MYSQL_PORT'] = 3300
+app.config['MYSQL_PORT'] = 3306
 # mysql = MySQL(app)
 
 # Initialisation de l'extension MySQL
