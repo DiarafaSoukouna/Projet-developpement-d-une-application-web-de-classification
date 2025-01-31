@@ -34,10 +34,18 @@ def get_db():
         port=app.config['MYSQL_PORT'],
         cursorclass=pymysql.cursors.DictCursor
 )
+def files():
+    conn = pymysql.connect(host=app.config['MYSQL_HOST'], user=app.config['MYSQL_USER'], password=app.config['MYSQL_PASSWORD'], db=app.config['MYSQL_DB'], port=app.config['MYSQL_PORT'])
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM `files`")
+    categories = cursor.fetchall()
+    return categories
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    document = files()
+    nombre_doc= len(document)
+    return render_template("home.html", document=nombre_doc)
 
 @app.route("/documents", methods=['GET'])
 def documents():
@@ -48,9 +56,13 @@ def documents():
     categories = cursor.fetchall()
     return render_template('documents.html', categories=categories)
 
+
 @app.route("/settings")
 def settings():
     return render_template("settings.html")
+@app.route("/chart")
+def chart():
+    return render_template("chart.html")
 @app.route("/category/<category_id>", methods=['GET'])
 def category(category_id):
     conn = pymysql.connect(host=app.config['MYSQL_HOST'], user=app.config['MYSQL_USER'], password=app.config['MYSQL_PASSWORD'], db=app.config['MYSQL_DB'], port=app.config['MYSQL_PORT'])
