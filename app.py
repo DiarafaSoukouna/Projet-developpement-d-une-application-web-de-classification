@@ -26,6 +26,69 @@ app.config['MYSQL_PORT'] = 3300
 
 methods=['POST', 'PUT', 'GET', 'PATCH', 'DELETE']
 
+
+@app.route('/data', methods=['GET'])
+def get_data():
+    conn = get_db()
+    cursor = conn.cursor()
+  
+    cursor.execute("SELECT volumeDocNumerise, tauxErreurDePrediction, tempsDeTraitement FROM kpi")
+    data = cursor.fetchall()
+
+    if not data:
+        cursor.close()
+        conn.close()
+        return jsonify({"error": "Pas de données"}), 500
+
+    volumes = [row["volumeDocNumerise"] for row in data]
+    taux_values = [row["tauxErreurDePrediction"] for row in data]
+    temps_values = [row["tempsDeTraitement"] for row in data]
+
+    volume_total = sum(volumes)
+    taux_moyen = sum(taux_values) / len(taux_values) if taux_values else 0
+    temps_moyen = sum(temps_values) / len(temps_values) if temps_values else 0
+
+
+    categorie = {
+        1: "tech",
+        2: "politics",
+        3: "sport",
+        4: "business",
+        5: "entertainment"
+    }
+
+
+    cursor.execute("SELECT category_id FROM kpi")  
+    categories_data = cursor.fetchall()
+    categories = [categorie.get(row["category_id"], "inconnu") for row in categories_data]  # Remplace ID par nom
+    
+    cursor.execute("""
+    SELECT YEAR(createDate) AS annee, MONTH(createDate) AS mois, COUNT(*) AS total 
+    FROM `kpi` 
+    GROUP BY annee, mois
+     """)
+    mois = {
+        1: "Janvier",
+        2: "Février",
+        3: "Mars",
+        4: "Avril",
+        5: "Mai",
+        6: "Juin",
+        7: "Juillet",
+        8: "Août",
+        9: "Septembre",
+        10: "Octobre",
+        11: "Novembre",
+        12: "Décembre"
+    }
+    cur = cursor.fetchall()
+    date_evolution = [{"annee": row["annee"], "mois": mois[row["mois"]], "total": row["total"]} for row in cur]
+    cursor.close()
+    conn.close()
+
+    return jsonify(volume=volume_total, taux=taux_moyen, temps=temps_moyen, categories=categories, date_evolution=date_evolution)
+
+
 def get_db():
     return pymysql.connect(
         host=app.config['MYSQL_HOST'],
