@@ -3,6 +3,28 @@
 {% block title %}Accueil{% endblock %}
 
 {% block content %}
+<style>
+    .loader {
+        border: 16px solid #f3f3f3;
+        /* Light grey */
+        border-top: 16px solid #6441AD;
+        /* Blue */
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
 <div style="padding: 20px;">
 
     <div style="float: right">
@@ -52,13 +74,14 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-center" id="load">
                 <form id="fileUploadForm" action="/upload" method="post" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label for="fileInput" class="form-label font-weight-bold">Sélectionnez un fichier (.txt, .docs,
+                        <label for="fileInput" class="form-label font-weight-bold"> Sélectionnez un fichier (.txt,
+                            .docs,
                             .doc)</label>
-                            <input type="file" id="fileInput" name="file" class="form-control"
-                            accept=".txt,.docs,.doc" required>
+                        <input type="file" id="fileInput" name="file" class="form-control" accept=".txt,.docs,.doc"
+                            required>
                         <small class="form-text text-muted mt-2">
                             Assurez-vous que le fichier est au bon format avant de soumettre.
                         </small>
@@ -66,7 +89,7 @@
                 </form>
             </div>
             <div class="modal-footer justify-content-between">
-                <button  type="button" class="btn btn-outline-danger" data-dismiss="modal">
+                <button type="button" class="btn btn-outline-danger" data-dismiss="modal">
                     <i class="fas fa-rotate-left"></i> Annuler
                 </button>
                 <button type="submit" form="fileUploadForm" class="btn btn-folder">
@@ -82,8 +105,8 @@
         event.preventDefault(); // Empêche le rechargement de la page
 
         const formData = new FormData(this);
-        document.getElementById('fileUploadForm').innerHTML = '<label style="font-size: 20px;text-align: center;font-weight: bold;color:#6441AD" for="">Fichier en cours de traitement ...</label>';
-        
+        document.getElementById('load').innerHTML = '<label for=""><div class="loader"></div></label>';
+
         fetch('/upload', {
             method: 'POST',
             body: formData
@@ -92,17 +115,40 @@
             .then(data => {
                 if (data.error) {
                     alert(`Erreur : ${data.error}`);
+                    document.getElementById('load').innerHTML = `
+                <form id="fileUploadForm" action="/upload" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="fileInput" class="form-label font-weight-bold"> Sélectionnez un fichier (.txt, .docs,
+                            .doc)</label>
+                        <input type="file" id="fileInput" name="file" class="form-control" accept=".txt,.docs,.doc"
+                            required>
+                        <small class="form-text text-muted mt-2">
+                            Assurez-vous que le fichier est au bon format avant de soumettre.
+                        </small>
+                    </div>
+                </form>`;
                 } else {
                     alert(`${data.message}`);
-                    location.href = '/category/'+ data.category;
+                    location.href = '/category/' + data.category;
                     // Fermer le modal
-                    $('#docs').modal('hide');
                     // Réinitialiser le formulaire
-                    document.getElementById('fileUploadForm').reset();
+                    // document.getElementById('fileUploadForm').reset();
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
+                document.getElementById('load').innerHTML = `
+                <form id="fileUploadForm" action="/upload" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="fileInput" class="form-label font-weight-bold"> Sélectionnez un fichier (.txt, .docs,
+                            .doc)</label>
+                        <input type="file" id="fileInput" name="file" class="form-control" accept=".txt,.docs,.doc"
+                            required>
+                        <small class="form-text text-muted mt-2">
+                            Assurez-vous que le fichier est au bon format avant de soumettre.
+                        </small>
+                    </div>
+                </form>`;
                 alert('Une erreur s\'est produite lors du téléchargement.');
             });
     });

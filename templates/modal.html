@@ -99,14 +99,14 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 style="font-size: 20px;">{{nom}}</h5>
-        <button type="button" class="btn-close" onclick="regdirection({{category}})"">&times;</button>
+        <button type="button" class="btn-close" onclick="regdirection('{{category}}')">&times;</button>
       </div>
       <div class="modal-body">
         <pre style="white-space: pre-wrap;">{{contenu}}</pre>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-delete" id="supprimerBtn">Supprimer</button>
-        <button type="button" class="btn btn-export" id="exporterBtn" data-id="{{ id }}">Exporter</button>
+        <button type="button" class="btn btn-delete" onclick="window.location.href='/fichier/delete/{{id}}'">Supprimer</button>
+        <button type="button" class="btn btn-export" id="exporterBtn">Exporter</button>
       </div>
     </div>
   </div>
@@ -119,22 +119,22 @@
       document.getElementById('fichierModal').style.display = "block";
     }
 
-    document.getElementById('supprimerBtn').addEventListener('click', function () {
-      const fichierId =  id ; 
-      fetch(`/fichier/delete/${fichierId}`, {
-        method: 'DELETE'
-      })
-        .then(response => response.json())
-        .then(data => {
-          alert(data.message || data.error);
-          if (data.message) {
-            window.location.href = '/';  
-          }
-        })
-        .catch(error => {
-          alert('Erreur lors de la suppression du fichier');
-        });
-    });
+    // document.getElementById('supprimerBtn').addEventListener('click', function () {
+    //   const fichierId =  id ; 
+    //   fetch(`/fichier/delete/${fichierId}`, {
+    //     method: 'DELETE'
+    //   })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //       alert(data.message || data.error);
+    //       if (data.message) {
+    //         window.location.href = '/';  
+    //       }
+    //     })
+    //     .catch(error => {
+    //       alert('Erreur lors de la suppression du fichier');
+    //     });
+    // });
 
     document.getElementById('exporterBtn').addEventListener('click', function () {
       const fichierId = this.getAttribute('data-id'); 
