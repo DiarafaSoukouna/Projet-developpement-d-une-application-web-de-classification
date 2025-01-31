@@ -131,9 +131,8 @@
                     alert(`${data.message}`);
                     location.href = '/category/' + data.category;
                     // Fermer le modal
-                    $('#docs').modal('hide');
                     // Réinitialiser le formulaire
-                    document.getElementById('fileUploadForm').reset();
+                    // document.getElementById('fileUploadForm').reset();
                 }
             })
             .catch(error => {

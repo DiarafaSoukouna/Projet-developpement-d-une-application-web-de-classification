@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, send_file
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, send_file, session
 import os
 import time
-from flask import Flask, flash, request, redirect, url_for
+import bcrypt
+from functools import wraps
 from werkzeug.utils import secure_filename
 
 # from '/backend/api2.py' import DocumentProcessor
@@ -19,7 +20,7 @@ app.config['MYSQL_PASSWORD'] = ''  # Mot de passe MySQL
 app.config['MYSQL_DB'] = 'danaya_file' 
 app.config['MYSQL_PORT'] = 3306
 # mysql = MySQL(app)
-
+app.secret_key = "deb1ebfbbd96561584a3284b3a77cbb6348968654c2f2aa982cc6922539aa1c7"
 # Initialisation de l'extension MySQL
 #mysql = MySQL(app)
 
@@ -40,14 +41,25 @@ def files():
     cursor.execute("SELECT * FROM `files`")
     categories = cursor.fetchall()
     return categories
+# 🔑 Déco pour protéger les routes
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'logged_in' not in session:
+            flash("Vous devez être connecté pour accéder à cette page.", "warning")
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
-@app.route("/")
+@app.route("/home")
+@login_required
 def home():
     document = files()
     nombre_doc= len(document)
     return render_template("home.html", document=nombre_doc)
 
 @app.route("/documents", methods=['GET'])
+@login_required
 def documents():
     
     conn = pymysql.connect(host=app.config['MYSQL_HOST'], user=app.config['MYSQL_USER'], password=app.config['MYSQL_PASSWORD'], db=app.config['MYSQL_DB'], port=app.config['MYSQL_PORT'])
@@ -58,9 +70,64 @@ def documents():
 
 
 @app.route("/settings")
+@login_required
 def settings():
-    return render_template("settings.html")
+    conn = pymysql.connect(host=app.config['MYSQL_HOST'], user=app.config['MYSQL_USER'], password=app.config['MYSQL_PASSWORD'], db=app.config['MYSQL_DB'], port=app.config['MYSQL_PORT'])
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM `users`")
+    users = cursor.fetchall()
+    return render_template('params.html', users=users)
+@app.route("/delete_user/<int:user_id>", methods=['POST'])
+@login_required
+def delete_user(user_id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
+        conn.commit()
+        flash('Utilisateur supprimé avec succès!', 'success')
+    except Exception as e:
+        flash(f'Erreur lors de la suppression de l\'utilisateur: {str(e)}', 'danger')
+    finally:
+        cursor.close()
+        conn.close()
+
+    return redirect(url_for('settings'))
+
+@app.route("/add_user", methods=['POST'])
+@login_required
+def add_user():
+    username = request.form['username']
+    email = request.form['email'] 
+    password = request.form['password']
+
+    # Hash du mot de passe
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)",
+            (username, email, hashed_password)
+        )
+        conn.commit()
+        flash('Utilisateur ajouté avec succès!', 'success')
+    except pymysql.err.IntegrityError:
+        flash('Erreur: Cet email est déjà utilisé', 'danger')
+    except Exception as e:
+        flash(f'Erreur lors de l\'ajout de l\'utilisateur: {str(e)}', 'danger')
+    finally:
+        cursor.close()
+        conn.close()
+
+    return redirect(url_for('settings'))
+
+
 @app.route("/chart")
+@login_required
 def chart():
     return render_template("chart.html")
 @app.route("/category/<category_id>", methods=['GET'])
@@ -75,6 +142,7 @@ def category(category_id):
     return render_template('files.html', files=files, category_name=category_name)
 
 @app.route("/help")
+@login_required
 def help_page():
     return render_template("help.html")
 def allowed_file(filename,):
@@ -83,7 +151,7 @@ def allowed_file(filename,):
 def insert_file(filename, category):
     conn = pymysql.connect(host=app.config['MYSQL_HOST'], user=app.config['MYSQL_USER'], password=app.config['MYSQL_PASSWORD'], db=app.config['MYSQL_DB'], port=app.config['MYSQL_PORT'])
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO files (title, file_path, category_id, uploaded_by ) VALUES (%s, %s, %s, %s)", (filename, 'documents/'+filename, category, 1))
+    cursor.execute("INSERT INTO files (title, file_path, category_id, uploaded_by ) VALUES (%s, %s, %s, %s)", (filename, 'documents/'+filename, category, None))
     conn.commit()
     cursor.close()
     conn.close()
@@ -153,6 +221,7 @@ def get_fichier_from_db(file_id):
 
 
 @app.route('/fichier/<int:id>', methods=['GET'])
+@login_required
 def afficher_fichier(id):
     fichier = get_fichier_from_db(id)
     if not fichier:
@@ -175,7 +244,7 @@ def afficher_fichier(id):
     return render_template("modal.html",nom=nom,contenu=contenu, id=id, category=category)
 
 
-@app.route('/fichier/delete/<int:id>', methods=['DELETE'])
+@app.route('/fichier/delete/<int:id>', methods=['GET'])
 def supprimer(id):
     fichier = get_fichier_from_db(id)
     if not fichier:
@@ -207,7 +276,7 @@ def supprimer(id):
         cursor.close()
         conn.close()
 
-    return jsonify({'message': 'Fichier supprimé avec succès'}), 200
+    return redirect('/documents')
 
 
 @app.route('/fichier/export/<int:id>', methods=['GET'])
@@ -225,7 +294,49 @@ def exporter_fichier(id):
     except Exception as e:
         return jsonify({'error': f'Erreur lors de l\'exportation du fichier : {e}'}), 500
 
+@app.route("/", methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password'].encode('utf-8')  # Convertir en bytes pour bcrypt
+        
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        # 🔍 Vérifier si l'utilisateur existe
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        user = cursor.fetchone()
+        
+        cursor.close()
+        conn.close()
+        
+        if user and bcrypt.checkpw(password, user['password'].encode('utf-8')):  # Comparer les mots de passe
+            session['logged_in'] = True
+            session['username'] = username
+            flash('Connexion réussie !', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('Nom d\'utilisateur ou mot de passe incorrect', 'danger')
+    
+    return render_template("login.html")
 
+# 🔑 Déco pour protéger les routes
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'logged_in' not in session:
+            flash("Vous devez être connecté pour accéder à cette page.", "warning")
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# 🚪 Déconnexion
+@app.route("/logout")
+@login_required
+def logout():
+    session.clear()
+    flash("Vous êtes déconnecté.", "info")
+    return redirect(url_for('login'))
 
 if __name__ == "__main__":
     app.run(debug=True)

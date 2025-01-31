@@ -36,7 +36,7 @@
 
         <div class="sidebar">
             <ul>
-                <li class="{% if request.path == '/' %}active{% endif %}">
+                <li class="{% if request.path == '/home' %}active{% endif %}">
                     <a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Accueil</a>
                 </li>
                 <li class="{% if request.path == '/documents' %}active{% endif %}">
@@ -48,10 +48,11 @@
                 <li class="{% if request.path == '/help' %}active{% endif %}">
                     <a href="{{ url_for('help_page') }}"><i class="fas fa-question-circle"></i> Aide</a>
                 </li>
+                <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+
             </ul>
-            <ul class="logout">
-                <li><a href="#"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
-            </ul>
+            <!-- <ul class="logout">
+            </ul> -->
         </div>
         <div style="margin-left: 16%;">
             {% block content %}
