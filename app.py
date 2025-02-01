@@ -4,7 +4,16 @@ import time
 import bcrypt
 from functools import wraps
 from werkzeug.utils import secure_filename
-
+import matplotlib.pyplot as plt
+import io
+import matplotlib
+matplotlib.use('Agg')  # Utiliser le backend non interactif
+import matplotlib.pyplot as plt
+import io
+import base64
+from collections import Counter
+import base64
+from collections import Counter
 # from '/backend/api2.py' import DocumentProcessor
 from backend.api2 import DocumentProcessor
 import pymysql
@@ -18,7 +27,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'  # Utilisateur MySQL
 app.config['MYSQL_PASSWORD'] = ''  # Mot de passe MySQL
 app.config['MYSQL_DB'] = 'danaya_file' 
-app.config['MYSQL_PORT'] = 3306
+app.config['MYSQL_PORT'] = 3300
 # mysql = MySQL(app)
 app.secret_key = "deb1ebfbbd96561584a3284b3a77cbb6348968654c2f2aa982cc6922539aa1c7"
 # Initialisation de l'extension MySQL
@@ -116,10 +125,109 @@ def login_required(f):
 
 @app.route("/home")
 @login_required
+
+    
 def home():
     document = files()
-    nombre_doc= len(document)
-    return render_template("home.html", document=nombre_doc)
+    nombre_doc = len(document)
+
+    conn = get_db()
+    cursor = conn.cursor()
+  
+    cursor.execute("SELECT volumeDocNumerise, tauxErreurDePrediction, tempsDeTraitement FROM kpi")
+    data = cursor.fetchall()
+
+    if not data:
+        cursor.close()
+        conn.close()
+        return jsonify({"error": "Pas de données"}), 500
+
+    volumes = [row["volumeDocNumerise"] for row in data]
+    taux_values = [row["tauxErreurDePrediction"] for row in data]
+    temps_values = [row["tempsDeTraitement"] for row in data]
+
+    volume_total = sum(volumes)
+    taux_moyen = sum(taux_values) / len(taux_values) if taux_values else 0
+    temps_moyen = sum(temps_values) / len(temps_values) if temps_values else 0
+
+    categorie = {
+        1: "tech",
+        2: "politics",
+        3: "sport",
+        4: "business",
+        5: "entertainment"
+    }
+
+    cursor.execute("SELECT category_id FROM kpi")  
+    categories_data = cursor.fetchall()
+    categories_list = [categorie.get(row["category_id"], "inconnu") for row in categories_data]
+
+    category_counts = dict(Counter(categories_list))
+
+  
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))  
+
+    # Graphique en barres
+    bars = ax1.bar(category_counts.keys(), category_counts.values(), color=["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"])
+    ax1.set_title("Répartition des Catégories", fontsize=16)
+    ax1.set_xlabel("Catégories", fontsize=14)
+    ax1.set_ylabel("Nombre d'entrées", fontsize=14)
+    ax1.tick_params(axis='x', rotation=45)  # Rotation des étiquettes de l'axe X
+    ax1.grid(axis='y', linestyle='--', alpha=0.7)  # Ajouter une grille
+
+    # Ajouter des étiquettes sur les barres
+    for bar in bars:
+        height = bar.get_height()
+        ax1.annotate(f'{height}',
+                     xy=(bar.get_x() + bar.get_width() / 2, height),
+                     xytext=(0, 3),  # Décalage vertical
+                     textcoords="offset points",
+                     ha='center', va='bottom')
+
+    # Graphique en camembert
+    labels = category_counts.keys()
+    sizes = category_counts.values()
+    explode = (0.1, 0, 0, 0, 0)  # Exploser la première section pour la mettre en évidence
+
+    ax2.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%', shadow=True, startangle=140,
+            colors=["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"])
+    ax2.set_title("Répartition des Catégories (Camembert)", fontsize=16)
+    ax2.axis('equal')  # Assurer que le camembert est circulaire
+
+    # Sauvegarde des graphiques en base64
+    img = io.BytesIO()
+    plt.savefig(img, format="png", bbox_inches='tight')  # bbox_inches pour éviter les coupures
+    img.seek(0)
+    plt.close(fig)
+
+    graph_url = base64.b64encode(img.getvalue()).decode()
+
+    # Récupération des données pour l'évolution mensuelle
+    cursor.execute("""
+    SELECT YEAR(createDate) AS annee, MONTH(createDate) AS mois, COUNT(*) AS total 
+    FROM `kpi` 
+    GROUP BY annee, mois
+    """)
+    mois = {
+        1: "Janvier",
+        2: "Février",
+        3: "Mars",
+        4: "Avril",
+        5: "Mai",
+        6: "Juin",
+        7: "Juillet",
+        8: "Août",
+        9: "Septembre",
+        10: "Octobre",
+        11: "Novembre",
+        12: "Décembre"
+    }
+    cur = cursor.fetchall()
+    date_evolution = [{"annee": row["annee"], "mois": mois[row["mois"]], "total": row["total"]} for row in cur]
+    cursor.close()
+    conn.close()
+
+    return render_template("home.html", document=nombre_doc, volume=volume_total, taux=round(taux_moyen, 2), temps=temps_moyen, date_evolution=date_evolution, graph_url=graph_url)
 
 @app.route("/documents", methods=['GET'])
 @login_required

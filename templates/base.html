@@ -45,9 +45,7 @@
                 <li class="{% if request.path == '/settings' %}active{% endif %}">
                     <a href="{{ url_for('settings') }}"><i class="fas fa-cog"></i> Paramètres</a>
                 </li>
-                <li class="{% if request.path == '/help' %}active{% endif %}">
-                    <a href="{{ url_for('help_page') }}"><i class="fas fa-question-circle"></i> Aide</a>
-                </li>
+<!--  -->
                 <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
 
             </ul>
