@@ -322,7 +322,7 @@ def allowed_file(filename,):
 def insert_file(filename, category):
     conn = pymysql.connect(host=app.config['MYSQL_HOST'], user=app.config['MYSQL_USER'], password=app.config['MYSQL_PASSWORD'], db=app.config['MYSQL_DB'], port=app.config['MYSQL_PORT'])
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO files (title, file_path, category_id, uploaded_by ) VALUES (%s, %s, %s, %s)", (filename, 'documents/'+filename, category, None))
+    cursor.execute("INSERT INTO files (title, file_path, category_id, uploaded_by ) VALUES (%s, %s, %s, %s)", (filename, 'documents/'+filename, category, session['user_id']))
     conn.commit()
     cursor.close()
     conn.close()
@@ -502,6 +502,7 @@ def login():
         if user and bcrypt.checkpw(password, user['password'].encode('utf-8')):  # Comparer les mots de passe
             session['logged_in'] = True
             session['username'] = username
+            session['user_id'] = user['id']
             flash('Connexion réussie !', 'success')
             return redirect(url_for('home'))
         else:
