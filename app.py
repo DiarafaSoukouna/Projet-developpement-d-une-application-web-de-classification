@@ -181,6 +181,13 @@ def file_upload():
             print(f"Prédictions : {predictions}")
             # Convert predictions to a list for JSON serialization
             predictions_list = predictions.tolist() if isinstance(predictions, np.ndarray) else predictions
+            # Count occurrences of each word
+            # word_counts = {}
+            # for word in predictions_list:
+            #     word_counts[word] = word_counts.get(word, 0) + 1
+            # # Get the most frequent word
+            # predictions_list = [max(word_counts.items(), key=lambda x: x[1])[0]]
+            
             categories = {
                 'tech': 1,
                 'politics': 2,
@@ -293,6 +300,17 @@ def exporter_fichier(id):
         return send_file(chemin_complet, as_attachment=True)
     except Exception as e:
         return jsonify({'error': f'Erreur lors de l\'exportation du fichier : {e}'}), 500
+@app.route("/profil")
+@login_required
+def profil():
+    conn = pymysql.connect(host=app.config['MYSQL_HOST'], user=app.config['MYSQL_USER'], password=app.config['MYSQL_PASSWORD'], db=app.config['MYSQL_DB'], port=app.config['MYSQL_PORT'])
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT id, username, email FROM users WHERE username = '{session['username']}'")
+    user_data = cursor.fetchall()
+    # Récupérer les informations de l'utilisateur connecté
+    return render_template("profil.html", user=user_data)
+        
+    
 
 @app.route("/", methods=['GET', 'POST'])
 def login():
@@ -337,6 +355,43 @@ def logout():
     session.clear()
     flash("Vous êtes déconnecté.", "info")
     return redirect(url_for('login'))
+
+@app.route("/update_password", methods=['POST'])
+@login_required
+def update_password():
+    current_password = request.form['current_password'].encode('utf-8')
+    new_password = request.form['new_password'].encode('utf-8')
+    confirm_password = request.form['confirm_password'].encode('utf-8')
+    
+    # Vérifier que les nouveaux mots de passe correspondent
+    if new_password != confirm_password:
+        flash("Les nouveaux mots de passe ne correspondent pas.", "danger")
+        return redirect(url_for('profil'))
+        
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Vérifier le mot de passe actuel
+    cursor.execute("SELECT password FROM users WHERE username = %s", (session['username'],))
+    user = cursor.fetchone()
+    
+    if not bcrypt.checkpw(current_password, user['password'].encode('utf-8')):
+        cursor.close()
+        conn.close()
+        flash("Le mot de passe actuel est incorrect.", "danger")
+        return redirect(url_for('profil'))
+    
+    # Hasher et mettre à jour le nouveau mot de passe
+    hashed_password = bcrypt.hashpw(new_password, bcrypt.gensalt())
+    cursor.execute("UPDATE users SET password = %s WHERE username = %s", 
+                  (hashed_password.decode('utf-8'), session['username']))
+    
+    conn.commit()
+    cursor.close()
+    conn.close()
+    
+    flash("Votre mot de passe a été mis à jour avec succès!", "success")
+    return redirect(url_for('profil'))
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -28,10 +28,10 @@
                 <img src="../static/image/DanayaFile.png" alt="Logo de l'application">
                 <span class="logo-text">DanayaFile</span>
             </div>
-            <div class="profile">
-                <span class="profile-name">John Doe</span>
-                <img src="../static/image//profil.jpg" alt="Photo de profil" class="profile-pic">
-            </div>
+            <a href="{{ url_for('profil') }}" class="profile">
+                <span class="profile-name">{{ session['username'] }}</span>
+                <img src="../static/image/profil.jpg" alt="Photo de profil" class="profile-pic">
+            </a>
         </div>
 
         <div class="sidebar">

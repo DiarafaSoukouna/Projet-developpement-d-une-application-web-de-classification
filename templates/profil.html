@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block content %}
+
+
+<div style="padding: 20px;">
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow">
+                    <!-- Affichage des messages flash -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} mt-3">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+                    <div class="card-header" style="background-color: #322058; color: white;">
+                        <h4 class="mb-0">Informations du compte </h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Conteneur principal pour l'affichage horizontal -->
+                        <div class="d-flex flex-row justify-content-between align-items-start p-4">
+                            <!-- Section de gauche : Icône et informations utilisateur -->
+                            <div class="text-center mr-5" style="min-width: 200px;">
+                                <i class="fas fa-user-circle fa-5x mb-3" style="color: #322058;"></i>
+                                <div class="user-info">
+                                    <p class="mb-2"><strong>Nom d'utilisateur:</strong> {{ user[0][1] }}</p>
+                                    <p class="mb-0"><strong>Email:</strong> {{ user[0][2] }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Séparateur vertical -->
+                            <div class="vr bg-light mx-5" style="height: 300px;"></div>
+
+                            <!-- Section de droite : Formulaire de mise à jour du mot de passe -->
+                            <form action="{{ url_for('update_password') }}" method="POST" class="flex-grow-1 ml-5">
+                                <div class="form-group mb-4">
+                                    <label for="current_password" class="form-label">Mot de passe actuel</label>
+                                    <input type="password" class="form-control" id="current_password"
+                                        name="current_password" required>
+                                </div>
+
+                                <div class="form-group mb-4">
+                                    <label for="new_password" class="form-label">Nouveau mot de passe</label>
+                                    <input type="password" class="form-control" id="new_password" name="new_password"
+                                        required>
+                                </div>
+
+                                <div class="form-group mb-4">
+                                    <label for="confirm_password" class="form-label">Confirmer le nouveau mot de
+                                        passe</label>
+                                    <input type="password" class="form-control" id="confirm_password"
+                                        name="confirm_password" required>
+                                </div>
+
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn text-white" style="background-color: #322058;">
+                                        <i class="fas fa-key mr-2"></i>Mettre à jour le mot de passe
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            border-bottom: none;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            padding: 10px 15px;
+        }
+
+        .form-control:focus {
+            border-color: #322058;
+            box-shadow: 0 0 0 0.2rem rgba(50, 32, 88, 0.25);
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 10px 20px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(50, 32, 88, 0.3);
+        }
+
+        .user-info {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+    </style>
+</div>
+
+{% endblock %}
